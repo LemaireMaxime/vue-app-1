@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Films et Séries </title>
+
+    <style>
+    /* Hide un-compiled mustache bindings
+    until the Vue instance is ready */
+
+    [v-cloak] {
+      display: none;
+    }
+
+    *{
+    	margin:0;
+    	padding:0;
+    }
+
+    body{
+    	font:15px/1.3 'Open Sans', sans-serif;
+    	color: #5e5b64;
+    	text-align:center;
+    }
+
+    a, a:visited {
+    	outline:none;
+    	color:#389dc1;
+    }
+
+    a:hover{
+    	text-decoration:none;
+    }
+
+    section, footer, header, aside, nav{
+    	display: block;
+    }
+
+    /*-------------------------
+    	The search input
+    --------------------------*/
+
+    .bar{
+    	background-color:#5c9bb7;
+
+    	background-image:-webkit-linear-gradient(top, #5c9bb7, #5392ad);
+    	background-image:-moz-linear-gradient(top, #5c9bb7, #5392ad);
+    	background-image:linear-gradient(top, #5c9bb7, #5392ad);
+
+    	box-shadow: 0 1px 1px #ccc;
+    	border-radius: 2px;
+    	width: 580px;
+    	padding: 10px;
+    	margin: 45px auto 25px;
+    	position:relative;
+    	text-align:right;
+    	line-height: 1;
+    }
+
+    .bar a{
+    	background:#4987a1 center center no-repeat;
+    	width:32px;
+    	height:32px;
+    	display:inline-block;
+    	text-decoration:none !important;
+    	margin-right:5px;
+    	border-radius:2px;
+    	cursor:pointer;
+    }
+
+    .bar a.active{
+    	background-color:#c14694;
+    }
+
+    
+
+    .bar input{
+    	background:#fff no-repeat 13px 13px;
+
+    	border: none;
+    	width: 100%;
+    	line-height: 19px;
+    	padding: 11px 0;
+
+    	border-radius: 2px;
+    	box-shadow: 0 2px 8px #c4c4c4 inset;
+    	text-align: left;
+    	font-size: 14px;
+    	font-family: inherit;
+    	color: #738289;
+    	font-weight: bold;
+    	outline: none;
+    	text-indent: 40px;
+    }
+
+    /*-------------------------
+    	List layout
+    --------------------------*/
+
+    ul.list{
+    	list-style: none;
+    	width: 500px;
+    	margin: 0 auto;
+    	text-align: left;
+    }
+
+    ul.list li{
+    	border-bottom: 1px solid #ddd;
+    	padding: 10px;
+    	overflow: hidden;
+    }
+
+    ul.list li img{
+    	width:120px;
+    	height:120px;
+    	float:left;
+    	border:none;
+    }
+
+    ul.list li p{
+    	margin-left: 135px;
+    	font-weight: bold;
+    	color:#6e7a7f;
+    }
+
+    /*-------------------------
+    	Grid layout
+    --------------------------*/
+
+    ul.grid{
+    	list-style: none;
+    	width: 570px;
+    	margin: 0 auto;
+    	text-align: left;
+    }
+
+    ul.grid li{
+    	padding: 2px;
+    	float:left;
+    }
+
+    ul.grid li img{
+    	width:280px;
+    	height:280px;
+    	object-fit: cover;
+    	display:block;
+    	border:none;
+    }
+    nav.Films .Films,
+	nav.Series .Series,
+	nav.Profil .Profil,
+	nav.Recherche .Recherche{
+		background-color:#ffea29d7;
+	}
+    nav{
+		display:inline-block;
+		margin:60px auto 45px;
+		background-color:#00000091;
+		box-shadow:0 1px 1px #ccc;
+		border-radius:2px;
+	}
+
+	nav a{
+		display:inline-block;
+		padding: 18px 30px;
+		color:#fff !important;
+		font-weight:bold;
+		font-size:16px;
+		text-decoration:none !important;
+		line-height:1;
+		text-transform: uppercase;
+		background-color:transparent;
+
+		-webkit-transition:background-color 0.25s;
+		-moz-transition:background-color 0.25s;
+		transition:background-color 0.25s;
+	}
+
+	nav a:first-child{
+		border-radius:2px 0 0 2px;
+	}
+
+	nav a:last-child{
+		border-radius:0 2px 2px 0;
+	}
+
+	nav.Films .Films,
+	nav.Series .Series,
+	nav.Profil .Profil,
+	nav.Recherche .Recherche{
+		background-color:#ffea29d7;
+	}
+
+	p{
+		font-size:22px;
+		font-weight:bold;
+		color:#7d9098;
+	}
+
+	p b{
+		color:#ffffff;
+		display:inline-block;
+		padding:5px 10px;
+		background-color:#c4d7e0;
+		border-radius:2px;
+		text-transform:uppercase;
+		font-size:18px;
+	}
+    </style>
+
+</head>
+<body>
+
+<form id="main" v-cloak>
+
+	<nav v-bind:class="active" v-on:click.prevent>
+                
+                <a class="Films" v-on:click="url('Films.html'), makeActive('Films')">Films</a>
+                <a class="Series" v-on:click="url('Series.html'),makeActive('Series')">Series</a>
+                <a class="Recherche" v-on:click="url('Recherche.html'),makeActive('Recherche')">Recherche</a>
+    </nav>
+
+	<!-- We have two layouts. We choose which one to show depending on the "layout" binding -->
+
+	<ul v-if="layout == 'grid'" class="grid">
+		<!-- A view with big photos and no text -->
+		<li v-for="a in articles">
+			<a v-bind:href="a.url" target="_blank"><img v-bind:src="a.image.large" /></a>
+		</li>
+	</ul>
+
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
+<script>
+var demo = new Vue({
+    el: '#main',
+    
+    data: {
+        // The layout mode, possible values are "grid" or "list".
+        layout: 'grid',
+        active: 'Films',
+        articles: [{
+            "title": "Joker",
+            "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=258374.html",
+            "image": {
+                "large": "https://images-na.ssl-images-amazon.com/images/I/71wbalyU7tL._AC_SY355_.jpg",
+                
+            }},
+            {
+            "title": "2001 l'odyssée de l'espace",
+            "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=27442.html",
+            "image": {
+                "large": "https://fr.web.img2.acsta.net/pictures/18/05/04/14/53/4306860.jpg",
+                
+            }
+            
+        },
+        {
+            "title": "Retour vers le futur",
+            "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=448.html",
+            "image": {
+            "large": "https://fr.web.img2.acsta.net/medias/nmedia/18/35/91/26/18686482.jpg",
+                
+            }
+          
+        },
+        {
+            "title": "Orange mécanique",
+            "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=260.html",
+            "image": {
+            "large": "https://p6.storage.canalblog.com/64/57/1299180/102005100_o.jpg",
+                
+            }
+          
+        }
+    
+    ]
+
+    },
+    methods: {
+		makeActive: function(item){
+		
+			this.active = item;
+        },
+        
+        url: function(url) {
+            window.location.href = url;
+        }
+    
+    }
+    
+   
+
+});
+	
+</script>
+</body>
+</html>
